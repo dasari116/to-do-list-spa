@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow — Sleek SPA</title>
+  <!-- Premium Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <div class="header-main">
+        <h1>TaskFlow</h1>
+        <p class="subtitle">Streamline your daily flow</p>
+      </div>
+      <div id="header-date" class="header-date">
+        Thursday, Aug 06
+      </div>
+    </header>
+
+    <!-- Notice/Alert toast -->
+    <div id="alert-toast" class="alert alert-success glass hidden">
+      Task completed successfully!
+    </div>
+
+    <!-- Metrics Dashboard -->
+    <div id="dashboard-metrics" class="metrics-grid">
+      <!-- Will be populated by JS -->
+      <div class="metric-card glass loading-skeleton"></div>
+      <div class="metric-card glass loading-skeleton"></div>
+      <div class="metric-card glass loading-skeleton"></div>
+      <div class="metric-card glass loading-skeleton"></div>
+    </div>
+
+    <!-- Quick Add Task -->
+    <section class="dashboard-section">
+      <h2 class="section-title">Quick Create</h2>
+      <form id="quick-add-form" class="quick-add-form glass">
+        <div class="form-inputs">
+          <div class="input-field-container flex-grow">
+            <input type="text" id="task-title-input" placeholder="What needs to be done?" required class="title-input">
+          </div>
+          
+          <div class="input-field-container">
+            <select id="task-priority-input" class="select-input">
+              <option value="" disabled selected>Priority</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+
+          <div class="input-field-container">
+            <select id="task-category-input" class="select-input">
+              <option value="" disabled selected>Category</option>
+              <option value="General">General</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Finance">Finance</option>
+              <option value="Health">Health</option>
+            </select>
+          </div>
+
+          <div class="input-field-container">
+            <input type="date" id="task-due-date-input" class="date-input">
+          </div>
+
+          <div class="input-field-container">
+            <button type="submit" class="btn-primary">＋ Add</button>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <!-- Controls Panel (Search & Filter) -->
+    <section class="dashboard-section">
+      <div class="section-header">
+        <h2 class="section-title">Your Tasks</h2>
+        <button id="clear-filters-btn" class="clear-filters-btn hidden">Clear Filters ✕</button>
+      </div>
+      
+      <div class="controls-panel glass">
+        <div class="search-filter-form">
+          <div class="search-box">
+            <input type="text" id="search-input" placeholder="Search tasks..." class="search-input-field">
+            <button id="search-btn" class="search-btn">🔍</button>
+          </div>
+
+          <div class="filters-group">
+            <div class="status-filters">
+              <button data-status="" class="filter-btn active">All</button>
+              <button data-status="pending" class="filter-btn">Active</button>
+              <button data-status="completed" class="filter-btn">Completed</button>
+            </div>
+
+            <div class="select-filters">
+              <select id="filter-priority" class="filter-select">
+                <option value="">All Priorities</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+              </select>
+
+              <select id="filter-category" class="filter-select">
+                <option value="">All Categories</option>
+                <option value="General">General</option>
+                <option value="Work">Work</option>
+                <option value="Personal">Personal</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Finance">Finance</option>
+                <option value="Health">Health</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tasks Grid -->
+    <div class="tasks-list-container">
+      <div id="tasks-container" class="tasks-grid">
+        <!-- Tasks will be injected by JavaScript -->
+      </div>
+      <div id="empty-state" class="empty-state glass hidden">
+        <p>No tasks found. Try adding a new task or changing your filters!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div id="edit-modal" class="modal-overlay hidden">
+    <div class="modal-content glass">
+      <div class="modal-header">
+        <h2>Edit Task</h2>
+        <button id="close-modal-btn" class="close-modal-btn">✕</button>
+      </div>
+      <form id="edit-task-form" class="premium-form">
+        <input type="hidden" id="edit-task-id">
+        <div class="form-group">
+          <label for="edit-title" class="form-label">Title</label>
+          <input type="text" id="edit-title" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-description" class="form-label">Description</label>
+          <textarea id="edit-description" class="form-control textarea-field"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="edit-priority" class="form-label">Priority</label>
+            <select id="edit-priority" class="form-control select-field">
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+
+          <div class="form-group half-width">
+            <label for="edit-category" class="form-label">Category</label>
+            <select id="edit-category" class="form-control select-field">
+              <option value="General">General</option>
+              <option value="Work">Work</option>
+              <option value="Personal">Personal</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Finance">Finance</option>
+              <option value="Health">Health</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group half-width">
+            <label for="edit-due-date" class="form-label">Due Date</label>
+            <input type="date" id="edit-due-date" class="form-control date-field">
+          </div>
+
+          <div class="form-group half-width checkbox-group">
+            <input type="checkbox" id="edit-completed" class="form-checkbox-input">
+            <label for="edit-completed" class="form-checkbox-label">Mark Completed</label>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary full-width">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

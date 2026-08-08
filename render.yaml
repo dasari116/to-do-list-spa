@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: taskflow-backend
+    runtime: ruby
+    rootDir: backend
+    buildCommand: ./bin/render-build.sh
+    startCommand: bundle exec rails server -b 0.0.0.0
+    envVars:
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_MASTER_KEY
+        sync: false

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TaskFlow — Sleek SPA</title>
+  <title>TaskFlow — Premium Productivity SPA</title>
   <!-- Premium Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,21 +11,82 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app-container">
+  <!-- Notice/Alert toast -->
+  <div id="alert-toast" class="alert alert-success glass hidden">
+    Task completed successfully!
+  </div>
+
+  <!-- Authentication Screen (Shown when logged out) -->
+  <div id="auth-container" class="auth-container glass">
+    <div class="auth-card">
+      <div class="auth-top-actions" style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+        <div class="theme-toggle-btn theme-slider-switch" title="Toggle Light/Dark Mode">
+          <div class="theme-slider-ball"></div>
+          <span class="theme-slider-icon sun-icon">☀️</span>
+          <span class="theme-slider-icon moon-icon">🌙</span>
+        </div>
+      </div>
+      <div class="auth-header">
+        <h1 class="glow-text">TaskFlow</h1>
+        <p class="subtitle">Streamline your daily flow</p>
+      </div>
+      
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab-btn active">Sign In</button>
+        <button id="tab-signup" class="auth-tab-btn">Create Account</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-username" class="form-label">Username</label>
+          <input type="text" id="login-username" class="form-control" placeholder="Enter username" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password" class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="Enter password" required>
+        </div>
+        <button type="submit" class="btn-primary full-width">Sign In</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signup-form" class="auth-form hidden">
+        <div class="form-group">
+          <label for="signup-username" class="form-label">Username</label>
+          <input type="text" id="signup-username" class="form-control" placeholder="Choose a username" required>
+        </div>
+        <div class="form-group">
+          <label for="signup-password" class="form-label">Password</label>
+          <input type="password" id="signup-password" class="form-control" placeholder="Choose password (min 6 chars)" required>
+        </div>
+        <div class="form-group">
+          <label for="signup-password-conf" class="form-label">Confirm Password</label>
+          <input type="password" id="signup-password-conf" class="form-control" placeholder="Confirm your password" required>
+        </div>
+        <button type="submit" class="btn-primary full-width">Sign Up</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Application Workspace (Shown when logged in) -->
+  <div id="app-container" class="app-container hidden">
     <header class="app-header">
       <div class="header-main">
         <h1>TaskFlow</h1>
-        <p class="subtitle">Streamline your daily flow</p>
+        <p class="subtitle">Welcome back, <span id="user-display" class="user-display-name">Guest</span>!</p>
       </div>
-      <div id="header-date" class="header-date">
-        Thursday, Aug 06
+      <div class="header-right">
+        <div id="theme-toggle" class="theme-toggle-btn theme-slider-switch" title="Toggle Light/Dark Mode">
+          <div class="theme-slider-ball"></div>
+          <span class="theme-slider-icon sun-icon">☀️</span>
+          <span class="theme-slider-icon moon-icon">🌙</span>
+        </div>
+        <button id="logout-btn" class="logout-btn btn-secondary">🚪 Logout</button>
+        <div id="header-date" class="header-date">
+          Thursday, Aug 06
+        </div>
       </div>
     </header>
-
-    <!-- Notice/Alert toast -->
-    <div id="alert-toast" class="alert alert-success glass hidden">
-      Task completed successfully!
-    </div>
 
     <!-- Metrics Dashboard -->
     <div id="dashboard-metrics" class="metrics-grid">
@@ -36,8 +97,16 @@
       <div class="metric-card glass loading-skeleton"></div>
     </div>
 
+    <!-- View Switcher -->
+    <div class="view-switcher-container">
+      <div class="view-switcher glass">
+        <button id="view-list-btn" class="view-btn active">📋 List View</button>
+        <button id="view-kanban-btn" class="view-btn">🗂️ Kanban Board</button>
+      </div>
+    </div>
+
     <!-- Quick Add Task -->
-    <section class="dashboard-section">
+    <section id="quick-create-section" class="dashboard-section">
       <h2 class="section-title">Quick Create</h2>
       <form id="quick-add-form" class="quick-add-form glass">
         <div class="form-inputs">
@@ -77,7 +146,7 @@
       </form>
     </section>
 
-    <!-- Controls Panel (Search & Filter) -->
+    <!-- Controls Panel (Search, Filter, Sort) -->
     <section class="dashboard-section">
       <div class="section-header">
         <h2 class="section-title">Your Tasks</h2>
@@ -92,7 +161,7 @@
           </div>
 
           <div class="filters-group">
-            <div class="status-filters">
+            <div id="status-filter-wrapper" class="status-filters">
               <button data-status="" class="filter-btn active">All</button>
               <button data-status="pending" class="filter-btn">Active</button>
               <button data-status="completed" class="filter-btn">Completed</button>
@@ -115,19 +184,72 @@
                 <option value="Finance">Finance</option>
                 <option value="Health">Health</option>
               </select>
+
+              <select id="sort-by" class="filter-select sort-select">
+                <option value="due_date_asc">📅 Due Date (Soonest)</option>
+                <option value="due_date_desc">📅 Due Date (Latest)</option>
+                <option value="priority_desc">🔥 Priority (High to Low)</option>
+                <option value="created_at_desc">🆕 Date Created (Newest)</option>
+                <option value="title_asc">🔤 Title (A-Z)</option>
+              </select>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Tasks Grid -->
-    <div class="tasks-list-container">
+    <!-- List View Workspace -->
+    <div id="list-view-container" class="tasks-list-container">
       <div id="tasks-container" class="tasks-grid">
         <!-- Tasks will be injected by JavaScript -->
       </div>
       <div id="empty-state" class="empty-state glass hidden">
         <p>No tasks found. Try adding a new task or changing your filters!</p>
+      </div>
+    </div>
+
+    <!-- Kanban Board Workspace -->
+    <div id="kanban-view-container" class="kanban-board hidden">
+      <!-- To Do Column -->
+      <div class="kanban-column glass" data-status="todo">
+        <div class="kanban-column-header">
+          <div class="column-title-wrapper">
+            <span class="column-dot todo-dot"></span>
+            <h3>To Do</h3>
+          </div>
+          <span class="kanban-column-count" id="count-todo">0</span>
+        </div>
+        <div class="kanban-column-tasks" id="tasks-todo">
+          <!-- Tasks will be injected -->
+        </div>
+      </div>
+
+      <!-- In Progress Column -->
+      <div class="kanban-column glass" data-status="in_progress">
+        <div class="kanban-column-header">
+          <div class="column-title-wrapper">
+            <span class="column-dot progress-dot"></span>
+            <h3>In Progress</h3>
+          </div>
+          <span class="kanban-column-count" id="count-in_progress">0</span>
+        </div>
+        <div class="kanban-column-tasks" id="tasks-in_progress">
+          <!-- Tasks will be injected -->
+        </div>
+      </div>
+
+      <!-- Completed Column -->
+      <div class="kanban-column glass" data-status="completed">
+        <div class="kanban-column-header">
+          <div class="column-title-wrapper">
+            <span class="column-dot completed-dot"></span>
+            <h3>Completed</h3>
+          </div>
+          <span class="kanban-column-count" id="count-completed">0</span>
+        </div>
+        <div class="kanban-column-tasks" id="tasks-completed">
+          <!-- Tasks will be injected -->
+        </div>
       </div>
     </div>
   </div>

@@ -30,6 +30,12 @@
         <h1 class="glow-text">TaskFlow</h1>
         <p class="subtitle">Streamline your daily flow</p>
       </div>
+
+      <!-- Server Wake Alert -->
+      <div id="server-wake-alert-auth" class="server-wake-alert hidden">
+        <div class="spinner-small"></div>
+        <span>Connecting to backend... waking server up from sleep (can take up to 90s).</span>
+      </div>
       
       <div class="auth-tabs">
         <button id="tab-login" class="auth-tab-btn active">Sign In</button>
@@ -87,6 +93,12 @@
         </div>
       </div>
     </header>
+
+    <!-- Server Wake Alert -->
+    <div id="server-wake-alert-app" class="server-wake-alert hidden" style="margin-top: 1rem;">
+      <div class="spinner-small"></div>
+      <span>Connecting to backend... waking server up from sleep (can take up to 90s).</span>
+    </div>
 
     <!-- Metrics Dashboard -->
     <div id="dashboard-metrics" class="metrics-grid">

@@ -27,6 +27,8 @@ let activeSort = 'due_date_asc';
 // DOM Elements
 const authContainer = document.getElementById('auth-container');
 const appContainer = document.getElementById('app-container');
+const wakeAlertAuth = document.getElementById('server-wake-alert-auth');
+const wakeAlertApp = document.getElementById('server-wake-alert-app');
 const userDisplay = document.getElementById('user-display');
 const logoutBtn = document.getElementById('logout-btn');
 
@@ -130,7 +132,34 @@ document.addEventListener('DOMContentLoaded', () => {
   closeModelBtn.addEventListener('click', hideEditModal);
   window.addEventListener('click', (e) => { if (e.target === editModal) hideEditModal(); });
   editTaskForm.addEventListener('submit', handleEditSubmit);
+
+  // Background ping to wake up the backend server immediately
+  pingBackend();
 });
+
+let backendIsAwake = false;
+
+// Ping backend to wake it up and show alert if it takes more than 1.5 seconds
+async function pingBackend() {
+  const timeoutId = setTimeout(() => {
+    if (!backendIsAwake) {
+      if (wakeAlertAuth) wakeAlertAuth.classList.remove('hidden');
+      if (wakeAlertApp) wakeAlertApp.classList.remove('hidden');
+    }
+  }, 1500);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/up`);
+    if (response.ok) {
+      backendIsAwake = true;
+      clearTimeout(timeoutId);
+      if (wakeAlertAuth) wakeAlertAuth.classList.add('hidden');
+      if (wakeAlertApp) wakeAlertApp.classList.add('hidden');
+    }
+  } catch (error) {
+    console.error("Backend health check failed:", error);
+  }
+}
 
 // Setup Auth view visibility
 function setupAuthUI() {
@@ -175,6 +204,13 @@ async function handleLogin(e) {
   const usernameInput = document.getElementById('login-username').value.trim();
   const passwordInput = document.getElementById('login-password').value;
 
+  const submitBtn = loginForm.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.innerHTML;
+
+  // Set loading state
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `<span class="spinner-small"></span> Signing In...`;
+
   try {
     const response = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
@@ -193,6 +229,10 @@ async function handleLogin(e) {
     localStorage.setItem('taskflow_token', token);
     localStorage.setItem('taskflow_username', username);
 
+    backendIsAwake = true;
+    if (wakeAlertAuth) wakeAlertAuth.classList.add('hidden');
+    if (wakeAlertApp) wakeAlertApp.classList.add('hidden');
+
     showToast('Signed in successfully! Welcome.');
     setupAuthUI();
   } catch (error) {
@@ -201,6 +241,10 @@ async function handleLogin(e) {
     const card = document.querySelector('.auth-card');
     card.classList.add('shake');
     setTimeout(() => card.classList.remove('shake'), 400);
+  } finally {
+    // Restore button state
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnText;
   }
 }
 
@@ -215,6 +259,13 @@ async function handleSignup(e) {
     showToast('Passwords do not match.', 'error');
     return;
   }
+
+  const submitBtn = signupForm.querySelector('button[type="submit"]');
+  const originalBtnText = submitBtn.innerHTML;
+
+  // Set loading state
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = `<span class="spinner-small"></span> Creating Account...`;
 
   try {
     const response = await fetch(`${API_BASE_URL}/signup`, {
@@ -234,6 +285,10 @@ async function handleSignup(e) {
     localStorage.setItem('taskflow_token', token);
     localStorage.setItem('taskflow_username', username);
 
+    backendIsAwake = true;
+    if (wakeAlertAuth) wakeAlertAuth.classList.add('hidden');
+    if (wakeAlertApp) wakeAlertApp.classList.add('hidden');
+
     showToast('Account created successfully!');
     setupAuthUI();
   } catch (error) {
@@ -242,6 +297,10 @@ async function handleSignup(e) {
     const card = document.querySelector('.auth-card');
     card.classList.add('shake');
     setTimeout(() => card.classList.remove('shake'), 400);
+  } finally {
+    // Restore button state
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalBtnText;
   }
 }
 

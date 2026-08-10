@@ -47,10 +47,10 @@ Navigate to the `backend/` directory:
 # Verify migrations are up-to-date
 ruby bin/rails db:migrate
 
-# Start the Puma Rails server (runs on Port 3000 by default)
+# Start the Puma Rails server (runs on https://to-do-list-jet-five-44.vercel.app/ )
 ruby bin/rails server
 ```
-The API endpoint will be available at `http://127.0.0.1:3000/tasks`.
+The API endpoint will be available .
 
 ### 2. Run the Frontend Client
 You can open [frontend/index.html](file:///c:/Users/dasar/OneDrive/Desktop/To%20do/frontend/index.html) directly in any modern browser, or run a simple local web server:

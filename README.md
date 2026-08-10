@@ -12,7 +12,7 @@ The project is structured as a **decoupled architecture**:
 
 ```mermaid
 graph TD
-    Client[Frontend SPA client: [(https://to-do-list-jet-five-44.vercel.app/)] -->|REST JSON API Requests| API[Rails API Server]
+    Client[Frontend SPA client: [https://to-do-list-jet-five-44.vercel.app/] -->|REST JSON API Requests| API[Rails API Server]
     API -->|Active Record| Database[(SQLite3 Database)]
 ```
 
